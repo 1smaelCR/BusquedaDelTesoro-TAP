@@ -1,7 +1,7 @@
 package ito.app.busquedadeltesoro;
 
-import java.awt.Image;
 import javax.swing.*;
+import java.awt.Image;
 
 public class Jugador {
     private String nombre;
@@ -11,7 +11,14 @@ public class Jugador {
     public Jugador(String nombre, String rutaImagenFicha) {
         this.nombre = nombre;
         this.posicion = 0;
+
+        // Cargar la imagen de la ficha
         ImageIcon iconoFicha = new ImageIcon(rutaImagenFicha);
+        if (iconoFicha.getImageLoadStatus() != java.awt.MediaTracker.COMPLETE) {
+            System.err.println("Error: No se pudo cargar la imagen de la ficha: " + rutaImagenFicha);
+        }
+
+        // Reescalar la imagen al tamaño deseado (30x30 píxeles)
         Image imagenFicha = iconoFicha.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         this.ficha = new JLabel(new ImageIcon(imagenFicha));
     }
