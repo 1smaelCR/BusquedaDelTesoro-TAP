@@ -6,7 +6,7 @@ public class Acertijo {
 
     public Acertijo(String pregunta, String respuesta) {
         this.pregunta = pregunta;
-        this.respuesta = respuesta;
+        this.respuesta = respuesta.toLowerCase();
     }
 
     public String getPregunta() {
@@ -14,6 +14,6 @@ public class Acertijo {
     }
 
     public boolean verificarRespuesta(String respuestaJugador) {
-        return respuesta.equalsIgnoreCase(respuestaJugador);
+        return respuesta.equalsIgnoreCase(respuestaJugador.trim());
     }
 }

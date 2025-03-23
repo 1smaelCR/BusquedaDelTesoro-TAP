@@ -103,6 +103,7 @@ public class TableroJuego extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 manejadorFichas.resolverAcertijo(jugadores[turnoActual]);
+                actualizarFichas(); // Redibujar las fichas después de resolver el acertijo
             }
         });
 
@@ -121,16 +122,44 @@ public class TableroJuego extends JFrame {
 
     public void moverFicha(Jugador jugador, int nuevaPosicion) {
         int posicionActual = jugador.getPosicion();
+
+        // Eliminar la ficha del jugador de la casilla actual (si está en una casilla)
         if (posicionActual > 0) {
-            casillas[posicionActual - 1].eliminarFicha();
+            Casilla casillaActual = casillas[posicionActual - 1];
+            casillaActual.eliminarFicha(jugador.getFicha());
         }
+
+        // Mover al jugador a la nueva posición
         jugador.setPosicion(nuevaPosicion);
-        casillas[nuevaPosicion - 1].setFicha(jugador.getFicha());
+
+        // Agregar la ficha del jugador a la nueva casilla
+        Casilla nuevaCasilla = casillas[nuevaPosicion - 1];
+        nuevaCasilla.agregarFicha(jugador.getFicha());
+
+        // Mostrar mensaje en el área de texto
+        mostrarMensaje(jugador.getNombre() + " avanzó a la posición " + nuevaPosicion);
+    }
+
+    public void actualizarFichas() {
+        // Limpiar todas las fichas del tablero
+        for (Casilla casilla : casillas) {
+            casilla.limpiarFichas();
+        }
+
+        // Volver a colocar las fichas en sus posiciones actuales
+        for (Jugador jugador : jugadores) {
+            int posicion = jugador.getPosicion();
+            if (posicion > 0) {
+                Casilla casilla = casillas[posicion - 1];
+                casilla.agregarFicha(jugador.getFicha());
+            }
+        }
     }
 
     public void siguienteTurno() {
         turnoActual = (turnoActual + 1) % jugadores.length;
         etiquetaTurno.setText("Turno de: " + jugadores[turnoActual].getNombre());
+        actualizarFichas(); // Redibujar las fichas en cada turno
     }
 
     public void mostrarAcertijo(String pregunta) {
