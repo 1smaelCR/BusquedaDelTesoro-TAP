@@ -33,7 +33,7 @@ public class TableroJuego extends JFrame {
         // Panel del tablero
         JPanel panelTablero = new JPanel(new GridLayout(10, 10));
         String rutaImagen = "images/tapizCasilla.jpg";
-        String rutaImagenInicio = "images/inicio.jpg";
+        String rutaImagenInicio = "images/inicio.png";
         String rutaImagenFinal = "images/tesoro.jpg";
 
         for (int fila = 0; fila < 10; fila++) {
@@ -52,7 +52,7 @@ public class TableroJuego extends JFrame {
             }
         }
 
-        // Panel de control (dado, botones, acertijos)
+        // Panel de control
         JPanel panelControl = new JPanel(new BorderLayout());
         panelControl.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -94,7 +94,7 @@ public class TableroJuego extends JFrame {
                     areaAcertijo.setText("Lanzaste un " + resultadoDado + ".\n");
                     determinarOrden(resultadoDado);
                     ordenDeterminado = true;
-                    botonLanzarDado.setEnabled(false); // Desactivar el botón después de usar el dado
+                    botonLanzarDado.setEnabled(false);
                 }
             }
         });
@@ -111,10 +111,8 @@ public class TableroJuego extends JFrame {
 
     private void determinarOrden(int resultadoDado) {
         if (resultadoDado > 3) {
-            // Jugador 1 va primero
             turnoActual = 0;
         } else {
-            // Jugador 2 va primero
             turnoActual = 1;
         }
         etiquetaTurno.setText("Turno de: " + jugadores[turnoActual].getNombre());

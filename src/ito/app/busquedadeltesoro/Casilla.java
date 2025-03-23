@@ -6,7 +6,7 @@ import java.awt.*;
 public class Casilla extends JLabel {
     private int posicion;
     private Icon icono;
-    private JLabel ficha; // Ficha del jugador
+    private JLabel ficha;
 
     public Casilla(int posicion, String rutaImagen) {
         this.posicion = posicion;
@@ -16,15 +16,15 @@ public class Casilla extends JLabel {
         this.setIcon(icono);
         this.setHorizontalAlignment(SwingConstants.CENTER);
         this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        this.setLayout(new BorderLayout()); // Para poder añadir la ficha
+        this.setLayout(new BorderLayout());
     }
 
     public void setFicha(JLabel ficha) {
         if (this.ficha != null) {
-            this.remove(this.ficha); // Eliminar la ficha anterior si existe
+            this.remove(this.ficha);
         }
         this.ficha = ficha;
-        this.add(ficha, BorderLayout.CENTER); // Añadir la ficha en el centro
+        this.add(ficha, BorderLayout.CENTER);
         this.revalidate();
         this.repaint();
     }
