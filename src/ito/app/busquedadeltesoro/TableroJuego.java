@@ -186,14 +186,39 @@ public class TableroJuego extends JFrame {
         JScrollPane scroll = new JScrollPane(areaAcertijo);
         panel.add(scroll, BorderLayout.CENTER);
 
-        // Panel de botones
+        /*/ Panel de botones
         JPanel panelBotones = new JPanel(new GridLayout(1, 2, 10, 10));
         botonLanzarDado = crearBoton("Lanzar Dado", Color.BLUE, Color.WHITE);
         botonResolverAcertijo = crearBoton("Resolver Acertijo", Color.GREEN.darker(), Color.WHITE);
         
         panelBotones.add(botonLanzarDado);
         panelBotones.add(botonResolverAcertijo);
-        panel.add(panelBotones, BorderLayout.SOUTH);
+        panel.add(panelBotones, BorderLayout.SOUTH);*/
+        
+        // Panel de botones (acciones y salida)
+        JPanel panelBotones = new JPanel(new GridLayout(1, 2, 10, 10));
+        botonLanzarDado = crearBoton("Lanzar Dado", Color.BLUE, Color.WHITE);
+        botonResolverAcertijo = crearBoton("Resolver Acertijo", Color.GREEN.darker(), Color.WHITE);
+        panelBotones.add(botonLanzarDado);
+        panelBotones.add(botonResolverAcertijo);
+
+        // Nuevos botones de Menú y Salir
+        JPanel panelSalida = new JPanel(new GridLayout(1, 2, 10, 10));
+        JButton botonMenu = crearBoton("Menú Principal", new Color(255, 165, 0), Color.WHITE); // Naranja
+        JButton botonSalir = crearBoton("Salir", Color.RED, Color.WHITE);
+        
+        botonMenu.addActionListener(e -> regresarAlMenu());
+        botonSalir.addActionListener(e -> salirDelJuego());
+        
+        panelSalida.add(botonMenu);
+        panelSalida.add(botonSalir);
+
+        // Contenedor para ambos grupos de botones
+        JPanel panelBotonesContainer = new JPanel(new GridLayout(2, 1, 10, 10));
+        panelBotonesContainer.add(panelBotones);
+        panelBotonesContainer.add(panelSalida);
+
+        panel.add(panelBotonesContainer, BorderLayout.SOUTH);
 
         return panel;
     }
@@ -370,5 +395,31 @@ public class TableroJuego extends JFrame {
 
     public void mostrarMensaje(String mensaje) {
         areaAcertijo.append("\n" + mensaje + "\n");
+    }
+    private void regresarAlMenu() {
+        int confirmacion = JOptionPane.showConfirmDialog(
+            this,
+            "¿Volver al menú principal? Se perderá el progreso actual.",
+            "Confirmar",
+            JOptionPane.YES_NO_OPTION
+        );
+        
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            this.dispose();
+            new MenuTesoro().setVisible(true); // Asegúrate que MenuTesoro tenga un constructor público
+        }
+    }
+
+    private void salirDelJuego() {
+        int confirmacion = JOptionPane.showConfirmDialog(
+            this,
+            "¿Estás seguro que quieres salir del juego?",
+            "Confirmar",
+            JOptionPane.YES_NO_OPTION
+        );
+        
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }
     }
 }
