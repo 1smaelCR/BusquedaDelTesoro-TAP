@@ -277,11 +277,18 @@ public class TableroJuego extends JFrame {
     }
 
     private void animarMovimiento(Jugador jugador, int desde, int hasta) {
-        if (desde == hasta) return;
-        
-        JLabel ficha = jugador.getFicha();
-        Casilla casillaOrigen = casillas[desde - 1];
-        Casilla casillaDestino = casillas[hasta - 1];
+        // Validar posiciones
+    if (desde < 1 || hasta < 1 || desde > 100 || hasta > 100) {
+        System.err.println("Posición inválida: desde=" + desde + ", hasta=" + hasta);
+        return;
+    }
+    
+    if (desde == hasta) return;
+    
+    JLabel ficha = jugador.getFicha();
+    Casilla casillaOrigen = casillas[desde - 1]; // Ahora seguro que desde >= 1
+    Casilla casillaDestino = casillas[hasta - 1]; // Ahora seguro que hasta >= 1
+
         
         Point puntoOrigen = casillaOrigen.getLocation();
         Point puntoDestino = casillaDestino.getLocation();

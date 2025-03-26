@@ -11,7 +11,7 @@ public class Jugador {
 
     public Jugador(String nombre, String rutaFicha) {
         this.nombre = nombre;
-        this.posicion = 0;
+        this.posicion = 1;
         this.rutaFicha = rutaFicha;
         actualizarFicha();
     }
