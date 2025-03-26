@@ -1,5 +1,5 @@
 package ito.app.busquedadeltesoro;
-
+import static ito.app.busquedadeltesoro.MenuTesoro.modoFullScreen;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -95,11 +95,20 @@ public class TableroJuego extends JFrame {
     }
 
     private void inicializarUI() {
-        setTitle("Caza del Tesoro - En Juego");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 700);
-        setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
+        setTitle("Bob Esponja: La Búsqueda del Tesoro");
+        if(modoFullScreen == true){
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setUndecorated(true);
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+            setLayout(new BorderLayout());
+        } else {
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setUndecorated(false);
+            setExtendedState(JFrame.NORMAL);
+            setTitle("Bob Esponja: La Búsqueda del Tesoro");
+            setSize(1176, 664);
+            setLocationRelativeTo(null);
+        }
 
         // Panel del tablero
         JPanel panelTablero = crearPanelTablero();
