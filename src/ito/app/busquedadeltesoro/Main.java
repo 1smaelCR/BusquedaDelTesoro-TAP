@@ -1,8 +1,10 @@
 package ito.app.busquedadeltesoro;
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        // Iniciar el menú principal
-        new MenuTesoro();
+        SwingUtilities.invokeLater(() -> {
+            new MenuTesoro();
+        });
     }
 }
