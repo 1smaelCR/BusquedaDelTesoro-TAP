@@ -14,19 +14,20 @@ public class ManejadorFichas {
     }
 
     public void resolverAcertijo(Jugador jugador) {
-        Acertijo acertijo = acertijos[random.nextInt(acertijos.length)];
-        tablero.mostrarAcertijo(acertijo.getPregunta());
-        String respuesta = tablero.obtenerRespuesta();
+    Acertijo acertijo = acertijos[random.nextInt(acertijos.length)];
+    tablero.mostrarAcertijo(acertijo.getPregunta());
+    String respuesta = tablero.obtenerRespuesta();
 
-        if (acertijo.verificarRespuesta(respuesta)) {
-            int pasos = random.nextInt(5) + 1; // Avanza entre 1 y 5 casillas
-            tablero.mostrarMensaje("¡Correcto! Avanzas " + pasos + " casillas.");
-            moverFicha(jugador, pasos);
-        } else {
-            tablero.mostrarMensaje("Incorrecto. Pierdes tu turno.");
-        }
-        tablero.siguienteTurno();
+    if (acertijo.verificarRespuesta(respuesta)) {
+        int pasos = random.nextInt(5) + 1;
+        // Mostrar mensaje único aquí:
+        tablero.mostrarMensaje("¡Correcto! " + jugador.getNombre() + " avanza " + pasos + " casillas.");
+        tablero.moverFicha(jugador, pasos); // Este ya no mostrará mensaje
+    } else {
+        tablero.mostrarMensaje("Incorrecto. " + jugador.getNombre() + " pierde turno.");
     }
+    tablero.siguienteTurno();
+}
 
     private void moverFicha(Jugador jugador, int pasos) {
         int nuevaPosicion = jugador.getPosicion() + pasos;

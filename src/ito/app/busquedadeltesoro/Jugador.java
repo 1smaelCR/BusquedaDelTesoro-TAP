@@ -7,18 +7,17 @@ public class Jugador {
     private String nombre;
     private int posicion;
     private JLabel ficha;
+    private String rutaFicha;
 
-    public Jugador(String nombre, String rutaImagenFicha) {
+    public Jugador(String nombre, String rutaFicha) {
         this.nombre = nombre;
         this.posicion = 0;
+        this.rutaFicha = rutaFicha;
+        actualizarFicha();
+    }
 
-        // Cargar la imagen de la ficha
-        ImageIcon iconoFicha = new ImageIcon(rutaImagenFicha);
-        if (iconoFicha.getImageLoadStatus() != java.awt.MediaTracker.COMPLETE) {
-            System.err.println("Error: No se pudo cargar la imagen de la ficha: " + rutaImagenFicha);
-        }
-
-        // Reescalar la imagen al tamaño deseado (30x30 píxeles)
+    private void actualizarFicha() {
+        ImageIcon iconoFicha = new ImageIcon(rutaFicha);
         Image imagenFicha = iconoFicha.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         this.ficha = new JLabel(new ImageIcon(imagenFicha));
     }
@@ -37,5 +36,10 @@ public class Jugador {
 
     public JLabel getFicha() {
         return ficha;
+    }
+
+    public void setRutaFicha(String rutaFicha) {
+        this.rutaFicha = rutaFicha;
+        actualizarFicha();
     }
 }

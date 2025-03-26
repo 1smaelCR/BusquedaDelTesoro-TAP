@@ -1,20 +1,13 @@
 package ito.app.busquedadeltesoro;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 public class MenuTesoro extends JFrame {
-    private JPanel panelMenu = new JPanel(new GridBagLayout()); // Panel del menú principal
-    private JPanel panelNumeroJugadores = new JPanel(new GridBagLayout()); // Panel de selección de jugadores
+    private JPanel panelMenu = new JPanel(new GridBagLayout());
+    private JPanel panelNumeroJugadores = new JPanel(new GridBagLayout());
     private JButton btnInicio = new JButton("INICIAR");
     private JButton btnSalir = new JButton("SALIR");
     private JButton btnJ2 = new JButton("JUGADORES 2");
@@ -51,61 +44,19 @@ public class MenuTesoro extends JFrame {
 
         add(panelMenu, BorderLayout.CENTER);
 
-        // Acción del botón INICIAR
-        btnInicio.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                elegirNumeroJugadores();
-            }
-        });
-
-        // Acción del botón SALIR
-        btnSalir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-
-        // Acción del botón REGRESAR
-        btnRegresar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                regresarMenuPrincipal();
-            }
-        });
-
-        // Acción del botón JUGADORES 2
-        btnJ2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                iniciarJuego(2); // Iniciar juego con 2 jugadores
-            }
-        });
-
-        // Acción del botón JUGADORES 3
-        btnJ3.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                iniciarJuego(3); // Iniciar juego con 3 jugadores
-            }
-        });
-
-        // Acción del botón JUGADORES 4
-        btnJ4.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                iniciarJuego(4); // Iniciar juego con 4 jugadores
-            }
-        });
+        btnInicio.addActionListener(e -> elegirNumeroJugadores());
+        btnSalir.addActionListener(e -> System.exit(0));
+        btnRegresar.addActionListener(e -> regresarMenuPrincipal());
+        btnJ2.addActionListener(e -> iniciarJuego(2));
+        btnJ3.addActionListener(e -> iniciarJuego(3));
+        btnJ4.addActionListener(e -> iniciarJuego(4));
 
         setVisible(true);
     }
 
-    // Método para mostrar el panel de selección de número de jugadores
-    public void elegirNumeroJugadores() {
+    private void elegirNumeroJugadores() {
         panelMenu.setVisible(false);
-        panelNumeroJugadores.removeAll(); // Limpiar el panel antes de agregar componentes
+        panelNumeroJugadores.removeAll();
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -123,33 +74,31 @@ public class MenuTesoro extends JFrame {
         panelNumeroJugadores.add(btnRegresar, gbc);
 
         add(panelNumeroJugadores, BorderLayout.CENTER);
-
         panelNumeroJugadores.setVisible(true);
         revalidate();
         repaint();
     }
 
-    // Método para regresar al menú principal
-    public void regresarMenuPrincipal() {
+    private void regresarMenuPrincipal() {
         panelNumeroJugadores.setVisible(false);
         panelMenu.setVisible(true);
-        revalidate(); // Actualizar la interfaz
-        repaint(); // Volver a dibujar
+        revalidate();
+        repaint();
     }
 
-    // Método para iniciar el juego con el número de jugadores seleccionado
- public void iniciarJuego(int numeroJugadores) {
+    private void iniciarJuego(int numeroJugadores) {
     Jugador[] jugadores = new Jugador[numeroJugadores];
+    
     for (int i = 0; i < numeroJugadores; i++) {
-        // Cambiamos la extensión de .jpg a .png
-        jugadores[i] = new Jugador("Jugador " + (i + 1), "images/Ficha" + (i + 1) + ".jpg");
+        String rutaFicha = SelectorFicha.mostrarDialogo(this, i + 1);
+        if (rutaFicha == null || rutaFicha.isEmpty()) {
+            rutaFicha = "images/Ficha" + (i + 1) + ".png"; // Default si no se selecciona
+        }
+        jugadores[i] = new Jugador("Jugador " + (i + 1), rutaFicha);
     }
 
-    // Crear y mostrar el tablero de juego
     TableroJuego pantalla = new TableroJuego(jugadores);
     pantalla.setVisible(true);
-
-    // Ocultar el menú
     this.setVisible(false);
 }
 

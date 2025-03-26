@@ -2,8 +2,9 @@ package ito.app.busquedadeltesoro;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.util.Arrays;
+import javax.swing.Timer;
 
 public class TableroJuego extends JFrame {
     private Jugador[] jugadores;
@@ -16,6 +17,15 @@ public class TableroJuego extends JFrame {
     private JButton botonResolverAcertijo;
     private ManejadorFichas manejadorFichas;
     private boolean ordenDeterminado = false;
+    private boolean juegoTerminado = false;
+    
+    // Temporizadores
+    private Timer temporizadorGlobal;
+    private Timer temporizadorTurno;
+    private int tiempoRestanteGlobal = 1200; // 20 minutos en segundos
+    private int tiempoRestanteTurno = 30; // 30 segundos por turno
+    private JLabel etiquetaTiempoGlobal;
+    private JLabel etiquetaTiempoTurno;
 
     public TableroJuego(Jugador[] jugadores) {
         this.jugadores = jugadores;
@@ -23,154 +33,326 @@ public class TableroJuego extends JFrame {
         this.dado = new Dado();
         this.manejadorFichas = new ManejadorFichas(this);
         inicializarUI();
+        inicializarTemporizadores();
+        actualizarFichas();
+    }
+
+    private void inicializarTemporizadores() {
+        // Temporizador global (20 minutos)
+        temporizadorGlobal = new Timer(1000, e -> {
+            tiempoRestanteGlobal--;
+            actualizarTiempoGlobal();
+            
+            if (tiempoRestanteGlobal <= 0) {
+                temporizadorGlobal.stop();
+                juegoTerminado = true;
+                mostrarMensaje("¡Tiempo agotado! El juego ha terminado.");
+                mostrarPantallaFinal();
+            }
+        });
+        
+        // Temporizador por turno (30 segundos)
+        temporizadorTurno = new Timer(1000, e -> {
+            tiempoRestanteTurno--;
+            actualizarTiempoTurno();
+            
+            if (tiempoRestanteTurno <= 0) {
+                temporizadorTurno.stop();
+                mostrarMensaje("¡Tiempo agotado para este turno!");
+                siguienteTurno();
+            }
+        });
+    }
+
+    private void actualizarTiempoGlobal() {
+        int minutos = tiempoRestanteGlobal / 60;
+        int segundos = tiempoRestanteGlobal % 60;
+        etiquetaTiempoGlobal.setText(String.format("Tiempo Total: %02d:%02d", minutos, segundos));
+        
+        // Cambiar color cuando quede poco tiempo
+        if (tiempoRestanteGlobal <= 60) {
+            etiquetaTiempoGlobal.setForeground(Color.RED);
+        } else if (tiempoRestanteGlobal <= 300) {
+            etiquetaTiempoGlobal.setForeground(Color.ORANGE);
+        }
+    }
+
+    private void actualizarTiempoTurno() {
+        etiquetaTiempoTurno.setText("Tiempo Turno: " + tiempoRestanteTurno);
+        
+        // Cambiar color cuando queden 10 segundos
+        if (tiempoRestanteTurno <= 10) {
+            etiquetaTiempoTurno.setForeground(Color.RED);
+        }
+    }
+
+    private void iniciarNuevoTurno() {
+        tiempoRestanteTurno = 30; // Resetear a 30 segundos
+        actualizarTiempoTurno();
+        temporizadorTurno.start();
+        botonResolverAcertijo.setEnabled(true);
+        etiquetaTiempoTurno.setForeground(Color.BLUE);
     }
 
     private void inicializarUI() {
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(800, 600);
-        this.setLayout(new BorderLayout());
+        setTitle("Caza del Tesoro - En Juego");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 700);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
         // Panel del tablero
-        JPanel panelTablero = new JPanel(new GridLayout(10, 10));
-        String rutaImagen = "images/tapizCasilla.jpg";
-        String rutaImagenInicio = "images/inicio.png";
-        String rutaImagenFinal = "images/tesoro.jpg";
+        JPanel panelTablero = crearPanelTablero();
+        add(panelTablero, BorderLayout.CENTER);
+
+        // Panel de control
+        JPanel panelControl = crearPanelControl();
+        add(panelControl, BorderLayout.EAST);
+
+        configurarEventos();
+    }
+
+    private JPanel crearPanelTablero() {
+        JPanel panel = new JPanel(new GridLayout(10, 10));
+        String rutaBase = "images/tapizCasilla.jpg";
+        String rutaInicio = "images/inicio.png";
+        String rutaTesoro = "images/tesoro.jpg";
 
         for (int fila = 0; fila < 10; fila++) {
             for (int columna = 0; columna < 10; columna++) {
                 int posicion = fila * 10 + columna + 1;
                 Casilla casilla;
+                
                 if (posicion == 1) {
-                    casilla = new CasillaInicioFinal(posicion, rutaImagenInicio);
+                    casilla = new CasillaInicioFinal(posicion, rutaInicio);
                 } else if (posicion == 100) {
-                    casilla = new CasillaInicioFinal(posicion, rutaImagenFinal);
+                    casilla = new CasillaInicioFinal(posicion, rutaTesoro);
                 } else {
-                    casilla = new Casilla(posicion, rutaImagen);
+                    casilla = new Casilla(posicion, rutaBase);
                 }
+                
                 casillas[posicion - 1] = casilla;
-                panelTablero.add(casilla);
+                panel.add(casilla);
             }
         }
+        return panel;
+    }
 
-        // Panel de control
-        JPanel panelControl = new JPanel(new BorderLayout());
-        panelControl.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    private JPanel crearPanelControl() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panel.setBackground(new Color(240, 240, 240));
 
-        // Dado
+        // Panel superior con información de tiempo y turno
+        JPanel panelSuperior = new JPanel(new GridLayout(3, 1));
+        
+        // Etiqueta de turno
+        etiquetaTurno = new JLabel("Turno: " + jugadores[turnoActual].getNombre(), SwingConstants.CENTER);
+        etiquetaTurno.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        // Etiquetas de tiempo
+        etiquetaTiempoGlobal = new JLabel("Tiempo Total: 20:00", SwingConstants.CENTER);
+        etiquetaTiempoGlobal.setFont(new Font("Arial", Font.BOLD, 14));
+        etiquetaTiempoGlobal.setForeground(Color.BLUE);
+        
+        etiquetaTiempoTurno = new JLabel("Tiempo Turno: 30", SwingConstants.CENTER);
+        etiquetaTiempoTurno.setFont(new Font("Arial", Font.BOLD, 14));
+        etiquetaTiempoTurno.setForeground(Color.BLUE);
+        
+        panelSuperior.add(etiquetaTurno);
+        panelSuperior.add(etiquetaTiempoGlobal);
+        panelSuperior.add(etiquetaTiempoTurno);
+        panel.add(panelSuperior, BorderLayout.NORTH);
+
+        // Panel del dado
         JPanel panelDado = new JPanel();
         panelDado.add(dado);
-        panelControl.add(panelDado, BorderLayout.NORTH);
+        panel.add(panelDado, BorderLayout.CENTER);
 
-        // Área de acertijos
-        areaAcertijo = new JTextArea(5, 20);
+        // Área de texto
+        areaAcertijo = new JTextArea(10, 25);
         areaAcertijo.setEditable(false);
-        areaAcertijo.setLineWrap(true);
-        areaAcertijo.setWrapStyleWord(true);
-        JScrollPane scrollAcertijo = new JScrollPane(areaAcertijo);
-        panelControl.add(scrollAcertijo, BorderLayout.CENTER);
+        areaAcertijo.setFont(new Font("Arial", Font.PLAIN, 14));
+        areaAcertijo.setBorder(BorderFactory.createTitledBorder("Eventos del Juego"));
+        JScrollPane scroll = new JScrollPane(areaAcertijo);
+        panel.add(scroll, BorderLayout.CENTER);
 
-        // Botones
-        JPanel panelBotones = new JPanel();
-        botonLanzarDado = new JButton("Lanzar Dado para Orden");
-        botonResolverAcertijo = new JButton("Resolver Acertijo");
+        // Panel de botones
+        JPanel panelBotones = new JPanel(new GridLayout(1, 2, 10, 10));
+        botonLanzarDado = crearBoton("Lanzar Dado", Color.BLUE, Color.WHITE);
+        botonResolverAcertijo = crearBoton("Resolver Acertijo", Color.GREEN.darker(), Color.WHITE);
+        
         panelBotones.add(botonLanzarDado);
         panelBotones.add(botonResolverAcertijo);
-        panelControl.add(panelBotones, BorderLayout.SOUTH);
+        panel.add(panelBotones, BorderLayout.SOUTH);
 
-        // Etiqueta de turno
-        etiquetaTurno = new JLabel("Turno de: " + jugadores[turnoActual].getNombre());
-        panelControl.add(etiquetaTurno, BorderLayout.NORTH);
+        return panel;
+    }
 
-        // Añadir paneles al JFrame
-        this.add(panelTablero, BorderLayout.CENTER);
-        this.add(panelControl, BorderLayout.EAST);
+    private JButton crearBoton(String texto, Color bgColor, Color fgColor) {
+        JButton boton = new JButton(texto);
+        boton.setBackground(bgColor);
+        boton.setForeground(fgColor);
+        boton.setFont(new Font("Arial", Font.BOLD, 14));
+        boton.setFocusPainted(false);
+        boton.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(bgColor.darker(), 2),
+            BorderFactory.createEmptyBorder(8, 15, 8, 15)
+        ));
+        
+        // Efecto hover
+        boton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                boton.setBackground(bgColor.brighter());
+            }
+            public void mouseExited(MouseEvent e) {
+                boton.setBackground(bgColor);
+            }
+        });
+        
+        return boton;
+    }
 
-        // Configurar acciones de los botones
-        botonLanzarDado.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!ordenDeterminado) {
-                    int resultadoDado = dado.lanzar();
-                    areaAcertijo.setText("Lanzaste un " + resultadoDado + ".\n");
-                    determinarOrden(resultadoDado);
-                    ordenDeterminado = true;
-                    botonLanzarDado.setEnabled(false);
-                }
+    private void configurarEventos() {
+        botonLanzarDado.addActionListener(e -> {
+            if (!ordenDeterminado && !juegoTerminado) {
+                int resultado = dado.lanzar();
+                areaAcertijo.append("Dado: " + resultado + "\n");
+                determinarOrden(resultado);
+                ordenDeterminado = true;
+                botonLanzarDado.setEnabled(false);
+                temporizadorGlobal.start(); // Iniciar temporizador global al primer lanzamiento
+                iniciarNuevoTurno(); // Iniciar primer turno
             }
         });
 
-        botonResolverAcertijo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        botonResolverAcertijo.addActionListener(e -> {
+            if (ordenDeterminado && !juegoTerminado) {
+                temporizadorTurno.stop(); // Pausar temporizador de turno
                 manejadorFichas.resolverAcertijo(jugadores[turnoActual]);
-                actualizarFichas(); // Redibujar las fichas después de resolver el acertijo
+                actualizarFichas();
             }
         });
-
-        this.setVisible(true);
     }
 
     private void determinarOrden(int resultadoDado) {
-        if (resultadoDado > 3) {
-            turnoActual = 0;
-        } else {
-            turnoActual = 1;
-        }
-        etiquetaTurno.setText("Turno de: " + jugadores[turnoActual].getNombre());
-        areaAcertijo.append("El orden de los turnos ha sido determinado.\n");
+        turnoActual = (resultadoDado > 3) ? 0 : 1;
+        actualizarTurno();
+        areaAcertijo.append("¡" + jugadores[turnoActual].getNombre() + " comienza primero!\n");
     }
 
-    public void moverFicha(Jugador jugador, int nuevaPosicion) {
+    public void moverFicha(Jugador jugador, int pasos) {
+        if (juegoTerminado || pasos <= 0) return;
+        
         int posicionActual = jugador.getPosicion();
-
-        // Eliminar la ficha del jugador de la casilla actual (si está en una casilla)
-        if (posicionActual > 0) {
-            Casilla casillaActual = casillas[posicionActual - 1];
-            casillaActual.eliminarFicha(jugador.getFicha());
-        }
-
-        // Mover al jugador a la nueva posición
-        jugador.setPosicion(nuevaPosicion);
-
-        // Agregar la ficha del jugador a la nueva casilla
-        Casilla nuevaCasilla = casillas[nuevaPosicion - 1];
-        nuevaCasilla.agregarFicha(jugador.getFicha());
-
-        // Mostrar mensaje en el área de texto
-        mostrarMensaje(jugador.getNombre() + " avanzó a la posición " + nuevaPosicion);
+        int nuevaPosicion = Math.min(posicionActual + pasos, 100);
+        
+        animarMovimiento(jugador, posicionActual, nuevaPosicion);
     }
 
     public void actualizarFichas() {
-        // Limpiar todas las fichas del tablero
+        // Limpiar todas las casillas
         for (Casilla casilla : casillas) {
-            casilla.limpiarFichas();
+            if (casilla != null) {
+                casilla.limpiarFichas();
+            }
         }
 
-        // Volver a colocar las fichas en sus posiciones actuales
+        // Colocar fichas en sus posiciones actuales
         for (Jugador jugador : jugadores) {
-            int posicion = jugador.getPosicion();
-            if (posicion > 0) {
-                Casilla casilla = casillas[posicion - 1];
-                casilla.agregarFicha(jugador.getFicha());
+            int pos = jugador.getPosicion();
+            if (pos > 0 && pos <= 100) {
+                casillas[pos - 1].agregarFicha(jugador.getFicha());
             }
         }
     }
 
+    private void animarMovimiento(Jugador jugador, int desde, int hasta) {
+        if (desde == hasta) return;
+        
+        JLabel ficha = jugador.getFicha();
+        Casilla casillaOrigen = casillas[desde - 1];
+        Casilla casillaDestino = casillas[hasta - 1];
+        
+        Point puntoOrigen = casillaOrigen.getLocation();
+        Point puntoDestino = casillaDestino.getLocation();
+        
+        Timer timer = new Timer(30, new ActionListener() {
+            private int paso = 0;
+            private final int totalPasos = 10;
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (paso >= totalPasos) {
+                    ((Timer)e.getSource()).stop();
+                    jugador.setPosicion(hasta);
+                    actualizarFichas();
+                    
+                    if (hasta == 100) {
+                        juegoTerminado = true;
+                        mostrarPantallaFinal();
+                    }
+                    return;
+                }
+                
+                double progreso = (double)paso / totalPasos;
+                int x = (int)(puntoOrigen.x + (puntoDestino.x - puntoOrigen.x) * progreso);
+                int y = (int)(puntoOrigen.y + (puntoDestino.y - puntoOrigen.y) * progreso);
+                
+                ficha.setLocation(x, y);
+                
+                if (paso < totalPasos / 2) {
+                    ficha.setLocation(x, y - (int)(10 * Math.sin(Math.PI * progreso)));
+                }
+                
+                paso++;
+            }
+        });
+        
+        casillaOrigen.eliminarFicha(ficha);
+        getContentPane().add(ficha);
+        ficha.setLocation(puntoOrigen);
+        timer.start();
+    }
+
+    private void mostrarPantallaFinal() {
+        Arrays.sort(jugadores, (j1, j2) -> Integer.compare(j2.getPosicion(), j1.getPosicion()));
+        
+        SwingUtilities.invokeLater(() -> {
+            new PantallaFinal(jugadores);
+            this.dispose();
+        });
+    }
+
     public void siguienteTurno() {
+        if (juegoTerminado) return;
+        
+        temporizadorTurno.stop();
         turnoActual = (turnoActual + 1) % jugadores.length;
-        etiquetaTurno.setText("Turno de: " + jugadores[turnoActual].getNombre());
-        actualizarFichas(); // Redibujar las fichas en cada turno
+        actualizarTurno();
+        iniciarNuevoTurno();
+    }
+
+    private void actualizarTurno() {
+        etiquetaTurno.setText("Turno: " + jugadores[turnoActual].getNombre());
+        etiquetaTurno.setForeground(Color.BLUE);
+        
+        Timer timer = new Timer(100, e -> {
+            etiquetaTurno.setForeground(Color.BLACK);
+            ((Timer)e.getSource()).stop();
+        });
+        timer.start();
     }
 
     public void mostrarAcertijo(String pregunta) {
-        areaAcertijo.setText("Acertijo: " + pregunta + "\n");
+        areaAcertijo.setText("ACERTIJO:\n" + pregunta + "\n\nIngresa tu respuesta:");
     }
 
     public String obtenerRespuesta() {
-        return JOptionPane.showInputDialog(this, "Resuelve el acertijo:", "Acertijo", JOptionPane.QUESTION_MESSAGE);
+        return JOptionPane.showInputDialog(this, "Resuelve el acertijo:", "Turno de " + jugadores[turnoActual].getNombre(), JOptionPane.QUESTION_MESSAGE);
     }
 
     public void mostrarMensaje(String mensaje) {
-        areaAcertijo.append(mensaje + "\n");
+        areaAcertijo.append("\n" + mensaje + "\n");
     }
 }
