@@ -17,7 +17,7 @@ public class GeneradorAcertijos {
         acertijos[10] = new Acertijo("Tiene hojas pero no es árbol, tiene piel pero no es animal. ¿Qué es?", "libro");
         acertijos[11] = new Acertijo("Sube cuando baja y baja cuando sube. ¿Qué es?", "termometro");
         acertijos[12] = new Acertijo("Lo usas todos los días pero no lo ves. ¿Qué es?", "aire");
-        acertijos[13] = new Acertijo("Tiene agujas pero no cose, marca horas sin voz. ¿Qué es?", "reloj");
+        acertijos[13] = new Acertijo("Tiene agujas pero no cose, marca horas sin voz. ¿Qué es?", "reloj"); 
         acertijos[14] = new Acertijo("Más ligero que una pluma pero ni el hombre más fuerte puede sostenerlo por 5 minutos. ¿Qué es?", "aliento");
         acertijos[15] = new Acertijo("Entra duro y seco, sale blando y mojado. ¿Qué es?", "chicle");
         acertijos[16] = new Acertijo("No tiene boca pero puede silbar, no tiene manos pero puede golpear. ¿Qué es?", "viento");

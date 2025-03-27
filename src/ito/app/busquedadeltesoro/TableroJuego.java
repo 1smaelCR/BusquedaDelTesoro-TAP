@@ -127,11 +127,11 @@ public class TableroJuego extends JFrame {
 
     private JPanel crearPanelTablero() {
     JPanel panel = new JPanel(new GridLayout(10, 10));
-    String rutaBase = "images/tapizCasilla.jpg";
-    String rutaInicio = "images/inicio.png";
-    String rutaTesoro = "images/tesoro.jpg";
-    String rutaAvanza = "images/avanza.jpeg";  // Nueva imagen
-    String rutaRetrocede = "images/retrocede.jpeg";  // Nueva imagen
+    String rutaBase = "images/tapizCasillas.png";
+    String rutaInicio = "images/inicio_1.png";
+    String rutaTesoro = "images/tesoroFinal.png";
+    String rutaAvanza = "images/avanza.png";  // Nueva imagen
+    String rutaRetrocede = "images/retrocede.png";  // Nueva imagen
 
     // Generar posiciones aleatorias para casillas especiales (2-99)
     List<Integer> posiciones = new ArrayList<>();
@@ -161,6 +161,7 @@ public class TableroJuego extends JFrame {
             }
             
             casillas[posicion - 1] = casilla;
+            //panel.setBackground(Color.cyan);
             panel.add(casilla);
         }
     }

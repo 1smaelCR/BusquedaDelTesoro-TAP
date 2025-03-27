@@ -12,13 +12,13 @@ public class Casilla extends JPanel {
         this.numero = numero;
         this.imagenFondo = new ImageIcon(rutaImagen);
         this.fichaActual = null;
-        
         setLayout(new OverlayLayout(this));
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         
+        
         // Label para mostrar el número de casilla
         labelNumero = new JLabel(String.valueOf(numero), SwingConstants.CENTER);
-        labelNumero.setFont(new Font("Arial", Font.BOLD, 10));
+        labelNumero.setFont(new Font("Arial", Font.BOLD, 20));
         labelNumero.setForeground(Color.WHITE);
         labelNumero.setOpaque(false);
         add(labelNumero);
