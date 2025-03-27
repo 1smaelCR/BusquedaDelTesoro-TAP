@@ -5,6 +5,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
 import javax.swing.Timer;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+
 
 public class TableroJuego extends JFrame {
     private Jugador[] jugadores;
@@ -17,7 +21,7 @@ public class TableroJuego extends JFrame {
     private JButton botonResolverAcertijo;
     private ManejadorFichas manejadorFichas;
     private boolean ordenDeterminado = false;
-    private boolean juegoTerminado = false;
+    public boolean juegoTerminado = false;
     
     // Temporizadores
     private Timer temporizadorGlobal;
@@ -122,30 +126,47 @@ public class TableroJuego extends JFrame {
     }
 
     private JPanel crearPanelTablero() {
-        JPanel panel = new JPanel(new GridLayout(10, 10));
-        String rutaBase = "images/tapizCasilla.jpg";
-        String rutaInicio = "images/inicio.png";
-        String rutaTesoro = "images/tesoro.jpg";
+    JPanel panel = new JPanel(new GridLayout(10, 10));
+    String rutaBase = "images/tapizCasilla.jpg";
+    String rutaInicio = "images/inicio.png";
+    String rutaTesoro = "images/tesoro.jpg";
+    String rutaAvanza = "images/avanza.jpeg";  // Nueva imagen
+    String rutaRetrocede = "images/retrocede.jpeg";  // Nueva imagen
 
-        for (int fila = 0; fila < 10; fila++) {
-            for (int columna = 0; columna < 10; columna++) {
-                int posicion = fila * 10 + columna + 1;
-                Casilla casilla;
-                
-                if (posicion == 1) {
-                    casilla = new CasillaInicioFinal(posicion, rutaInicio);
-                } else if (posicion == 100) {
-                    casilla = new CasillaInicioFinal(posicion, rutaTesoro);
-                } else {
-                    casilla = new Casilla(posicion, rutaBase);
-                }
-                
-                casillas[posicion - 1] = casilla;
-                panel.add(casilla);
+    // Generar posiciones aleatorias para casillas especiales (2-99)
+    List<Integer> posiciones = new ArrayList<>();
+    for(int i = 2; i < 100; i++) posiciones.add(i);
+    Collections.shuffle(posiciones);
+
+    List<Integer> avanzaPosiciones = posiciones.subList(0, 10);
+    List<Integer> retrocedePosiciones = posiciones.subList(10, 20);
+
+    for (int fila = 0; fila < 10; fila++) {
+        for (int columna = 0; columna < 10; columna++) {
+            int posicion = fila * 10 + columna + 1;
+            Casilla casilla;
+            
+            if (posicion == 1) {
+                casilla = new CasillaInicioFinal(posicion, rutaInicio);
+            } else if (posicion == 100) {
+                casilla = new CasillaInicioFinal(posicion, rutaTesoro);
+            } else if (avanzaPosiciones.contains(posicion)) {
+                int valor = (int)(Math.random() * 10) + 1;
+                casilla = new CasillaEspecial(posicion, "avanza", valor, rutaAvanza);
+            } else if (retrocedePosiciones.contains(posicion)) {
+                int valor = (int)(Math.random() * 10) + 1;
+                casilla = new CasillaEspecial(posicion, "retrocede", valor, rutaRetrocede);
+            } else {
+                casilla = new Casilla(posicion, rutaBase);
             }
+            
+            casillas[posicion - 1] = casilla;
+            panel.add(casilla);
         }
-        return panel;
     }
+    return panel;
+}
+
 
     private JPanel crearPanelControl() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -301,7 +322,7 @@ public class TableroJuego extends JFrame {
         }
     }
 
-    private void animarMovimiento(Jugador jugador, int desde, int hasta) {
+    /*private void animarMovimiento(Jugador jugador, int desde, int hasta) {
         // Validar posiciones
     if (desde < 1 || hasta < 1 || desde > 100 || hasta > 100) {
         System.err.println("Posición inválida: desde=" + desde + ", hasta=" + hasta);
@@ -354,7 +375,79 @@ public class TableroJuego extends JFrame {
         getContentPane().add(ficha);
         ficha.setLocation(puntoOrigen);
         timer.start();
+    }*/
+    public void animarMovimiento(Jugador jugador, int desde, int hasta) {
+    if (desde < 1 || hasta < 1 || desde > 100 || hasta > 100) {
+        System.err.println("Posición inválida: desde=" + desde + ", hasta=" + hasta);
+        return;
     }
+
+    JLabel ficha = jugador.getFicha();
+    Casilla casillaOrigen = casillas[desde - 1];
+    Casilla casillaDestino = casillas[hasta - 1];
+    
+    // 1. Eliminar ficha de la casilla origen (como en tu original)
+    casillaOrigen.eliminarFicha(ficha);
+    getContentPane().add(ficha);
+
+    Timer timer = new Timer(30, new ActionListener() {
+        private int paso = 0;
+        private final int totalPasos = 10;
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (paso >= totalPasos) {
+                ((Timer)e.getSource()).stop();
+                
+                // 2. Actualizar posición (como en tu original)
+                jugador.setPosicion(hasta);
+                actualizarFichas();
+                
+                // 3. Nuevo: Verificar casillas especiales
+                if (casillaDestino instanceof CasillaEspecial) {
+                    CasillaEspecial especial = (CasillaEspecial) casillaDestino;
+                    int movimiento = especial.getValor();
+                    int nuevaPos;
+                    
+                    if (especial.getTipo().equals("avanza")) {
+                        nuevaPos = Math.min(hasta + movimiento, 100);
+                        areaAcertijo.append("\n¡Casilla especial! Avanzas " + movimiento + " casillas!\n");
+                    } else {
+                        nuevaPos = Math.max(hasta - movimiento, 1);
+                        areaAcertijo.append("\n¡Casilla especial! Retrocedes " + movimiento + " casillas!\n");
+                    }
+                    
+                    // Llamada recursiva para el movimiento adicional
+                    if (nuevaPos != hasta) {
+                        animarMovimiento(jugador, hasta, nuevaPos);
+                    }
+                }
+                
+                // 4. Verificar victoria (como en tu original)
+                if (hasta == 100) {
+                    juegoTerminado = true;
+                    mostrarPantallaFinal();
+                }
+                return;
+            }
+            
+            // Animación original (con tu efecto de salto)
+            Point puntoOrigen = casillaOrigen.getLocation();
+            Point puntoDestino = casillaDestino.getLocation();
+            double progreso = (double)paso / totalPasos;
+            int x = (int)(puntoOrigen.x + (puntoDestino.x - puntoOrigen.x) * progreso);
+            int y = (int)(puntoOrigen.y + (puntoDestino.y - puntoOrigen.y) * progreso);
+            
+            if (paso < totalPasos / 2) {
+                y -= (int)(10 * Math.sin(Math.PI * progreso));
+            }
+            
+            ficha.setLocation(x, y);
+            paso++;
+        }
+    });
+    timer.start();
+}
 
     private void mostrarPantallaFinal() {
         Arrays.sort(jugadores, (j1, j2) -> Integer.compare(j2.getPosicion(), j1.getPosicion()));

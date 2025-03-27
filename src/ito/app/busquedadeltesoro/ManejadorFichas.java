@@ -1,5 +1,4 @@
 package ito.app.busquedadeltesoro;
-
 import java.util.Random;
 
 public class ManejadorFichas {
@@ -29,12 +28,23 @@ public class ManejadorFichas {
     tablero.siguienteTurno();
 }
 
-    private void moverFicha(Jugador jugador, int pasos) {
+   /* private void moverFicha(Jugador jugador, int pasos) {
         int nuevaPosicion = jugador.getPosicion() + pasos;
         if (nuevaPosicion > 100) {
             nuevaPosicion = 100;
         }
         tablero.moverFicha(jugador, nuevaPosicion);
         tablero.mostrarMensaje(jugador.getNombre() + " avanzó a la posición " + nuevaPosicion);
-    }
+    }*/
+    public void moverFicha(Jugador jugador, int pasos) {
+        
+    // Mantenemos tu validación original
+    if (tablero.juegoTerminado || pasos <= 0) return;
+    
+    int posicionActual = jugador.getPosicion();
+    int nuevaPosicion = Math.min(posicionActual + pasos, 100);
+    
+    // Usamos tu método original de animación
+    tablero.animarMovimiento(jugador, posicionActual, nuevaPosicion);
+}
 }
