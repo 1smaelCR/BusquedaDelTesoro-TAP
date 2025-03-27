@@ -20,7 +20,7 @@ public class GeneradorAcertijos {
         acertijos[13] = new Acertijo("Lo mandaron a la escuela de nuevo, y la \nmaestra tuvo que tenerle paciencia de acero. \n¿Quién es?", "don cangrejo");
         acertijos[14] = new Acertijo("Bob y patricio cuidaron un huevo, pero la \npaternidad fue un juego. ¿Que capitulo fue?", "padres adoptivos");
         acertijos[15] = new Acertijo("Bob quiso escapar de un ladrón, pero todo \nfue parte de una confusión. ¿Que capitulo es?", "el cliente misterioso");
-        acertijos[16] = new Acertijo("Vas a ser un dios y te gustará. ¿Quien dijo \nesta frase?","el rey neptuno");
+        acertijos[16] = new Acertijo("Vas a ser un dios y te gustará. ¿Quien dijo \nesta frase?","rey neptuno");
         acertijos[17] = new Acertijo("Soy una ardilla que vive en una cúpula y \nama el karate. ¿Quién soy?", "arenita");
         acertijos[18] = new Acertijo("Soy una maestra estricta que enseña a conducir, \npero mi peor alumno nunca aprueba. ¿Quién soy?", "señorita puff");
         acertijos[19] = new Acertijo("Soy el héroe de la infancia de muchos, aunque \nya estoy muy viejo y cansado. ¿Quién soy?", "sireno man");
