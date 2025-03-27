@@ -33,7 +33,7 @@ public class PantallaFinal extends JFrame {
             String texto = jugador.getNombre() + " - Posición: " + jugador.getPosicion();
             if (jugador.getPosicion() == 100) {
                 texto += " ¡GANADOR!";
-                panelJugador.setBackground(new Color(220, 255, 220));
+                panelJugador.setBackground(new Color(255, 215, 0)); // Fondo dorado
             }
             
             JLabel labelTexto = new JLabel(texto);

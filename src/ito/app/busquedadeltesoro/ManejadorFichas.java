@@ -12,39 +12,36 @@ public class ManejadorFichas {
         this.random = new Random();
     }
 
-    public void resolverAcertijo(Jugador jugador) {
-    Acertijo acertijo = acertijos[random.nextInt(acertijos.length)];
-    tablero.mostrarAcertijo(acertijo.getPregunta());
-    String respuesta = tablero.obtenerRespuesta();
-
-    if (acertijo.verificarRespuesta(respuesta)) {
-        int pasos = random.nextInt(5) + 1;
-        // Mostrar mensaje único aquí:
-        tablero.mostrarMensaje("¡Correcto! " + jugador.getNombre() + " avanza " + pasos + " casillas.");
-        tablero.moverFicha(jugador, pasos); // Este ya no mostrará mensaje
-    } else {
-        tablero.mostrarMensaje("Incorrecto. " + jugador.getNombre() + " pierde turno.");
+    public Acertijo obtenerAcertijoAleatorio() {
+        return acertijos[random.nextInt(acertijos.length)];
     }
-    tablero.siguienteTurno();
-}
 
-   /* private void moverFicha(Jugador jugador, int pasos) {
-        int nuevaPosicion = jugador.getPosicion() + pasos;
-        if (nuevaPosicion > 100) {
-            nuevaPosicion = 100;
+    public void resolverAcertijo(Jugador jugador) {
+        if (jugador.getPosicion() == 100) {
+            // No resolver acertijos normales en el tesoro
+            return;
         }
-        tablero.moverFicha(jugador, nuevaPosicion);
-        tablero.mostrarMensaje(jugador.getNombre() + " avanzó a la posición " + nuevaPosicion);
-    }*/
-    public void moverFicha(Jugador jugador, int pasos) {
         
-    // Mantenemos tu validación original
-    if (tablero.juegoTerminado || pasos <= 0) return;
-    
-    int posicionActual = jugador.getPosicion();
-    int nuevaPosicion = Math.min(posicionActual + pasos, 100);
-    
-    // Usamos tu método original de animación
-    tablero.animarMovimiento(jugador, posicionActual, nuevaPosicion);
-}
+        Acertijo acertijo = obtenerAcertijoAleatorio();
+        tablero.mostrarAcertijo(acertijo.getPregunta());
+        String respuesta = tablero.obtenerRespuesta();
+
+        if (acertijo.verificarRespuesta(respuesta)) {
+            int pasos = random.nextInt(5) + 1;
+            tablero.mostrarMensaje("¡Correcto! " + jugador.getNombre() + " avanza " + pasos + " casillas.");
+            tablero.moverFicha(jugador, pasos);
+        } else {
+            tablero.mostrarMensaje("Incorrecto. " + jugador.getNombre() + " pierde turno.");
+        }
+        tablero.siguienteTurno();
+    }
+
+    public void moverFicha(Jugador jugador, int pasos) {
+        if (tablero.juegoTerminado || pasos <= 0) return;
+        
+        int posicionActual = jugador.getPosicion();
+        int nuevaPosicion = Math.min(posicionActual + pasos, 100);
+        
+        tablero.animarMovimiento(jugador, posicionActual, nuevaPosicion);
+    }
 }
