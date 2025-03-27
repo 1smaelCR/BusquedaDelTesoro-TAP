@@ -8,6 +8,8 @@ public class MenuTesoro extends JFrame {
     public static boolean modoFullScreen = true;
     private JPanel panelMenu = new JPanel(new GridBagLayout());
     private JPanel panelNumeroJugadores = new JPanel(new GridBagLayout());
+    private ImageIcon imgFondo = new ImageIcon("fonts/fondomenu.jpg");
+    private JLabel fondo = new JLabel(imgFondo);
     private JButton btnInicio = new JButton("INICIAR");
     private JButton btnSalir = new JButton("SALIR");
     private JButton btnConfigVentana = new JButton();
@@ -17,31 +19,32 @@ public class MenuTesoro extends JFrame {
     private JButton btnRegresar = new JButton("REGRESAR");
 
     public MenuTesoro() {
+        setTitle("Bob Esponja: La Búsqueda del Tesoro");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(true);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setTitle("Bob Esponja: La Búsqueda del Tesoro");
-        setLayout(new BorderLayout());
-        setVisible(true);
-        
-        PantallaCarga pantalla = new PantallaCarga();
-        pantalla.setVisible(true);
-        
-        /*setTitle("Caza del Tesoro");
-        setSize(1200, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(screenSize.width, screenSize.height);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout());*/
+
+        fondo.setLayout(new BorderLayout());
+        Image fondoEscalado = imgFondo.getImage().getScaledInstance(screenSize.width, screenSize.height, Image.SCALE_SMOOTH);
+        fondo.setIcon(new ImageIcon(fondoEscalado));
+
+        setContentPane(fondo);
+        panelMenu.setOpaque(false);
 
         Dimension buttonSize = new Dimension(200, 50);
         Dimension buttonConfigSize = new Dimension(50, 50);
+
         btnInicio.setPreferredSize(buttonSize);
         btnSalir.setPreferredSize(buttonSize);
         btnConfigVentana.setPreferredSize(buttonConfigSize);
-        ImageIcon img = new ImageIcon("images/settings.jpg");
-        Image imgRedi = img.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        img = new ImageIcon(imgRedi);
-        btnConfigVentana.setIcon(img);
+
+        ImageIcon imgConfig = new ImageIcon("images/settings.jpg");
+        Image imgRedi = imgConfig.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        btnConfigVentana.setIcon(new ImageIcon(imgRedi));
+
         btnJ2.setPreferredSize(buttonSize);
         btnJ3.setPreferredSize(buttonSize);
         btnJ4.setPreferredSize(buttonSize);
@@ -50,20 +53,19 @@ public class MenuTesoro extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridx = 0;
-        gbc.gridy = 0;
 
-        gbc.gridy = 1;
+        gbc.gridy = 0;
         panelMenu.add(btnInicio, gbc);
 
-        gbc.gridy = 2;
+        gbc.gridy = 1;
         panelMenu.add(btnSalir, gbc);
-        
-        gbc.gridy = 3;
+
+        gbc.gridy = 2;
         panelMenu.add(btnConfigVentana, gbc);
 
-        add(panelMenu, BorderLayout.CENTER);
+        fondo.add(panelMenu, BorderLayout.CENTER);
 
-        btnInicio.addActionListener(e -> elegirNumeroJugadores());
+        btnInicio.addActionListener(e -> elegirNumeroJugadores()); 
         btnSalir.addActionListener(e -> System.exit(0));
         btnConfigVentana.addActionListener(e -> configuracionVentana());
         btnRegresar.addActionListener(e -> regresarMenuPrincipal());
@@ -73,6 +75,7 @@ public class MenuTesoro extends JFrame {
     }
 
     private void elegirNumeroJugadores() {
+        panelNumeroJugadores.setOpaque(false);
         panelMenu.setVisible(false);
         panelNumeroJugadores.removeAll();
 
@@ -111,6 +114,7 @@ public class MenuTesoro extends JFrame {
         TableroJuego pantalla = new TableroJuego(jugadores);
         pantalla.setVisible(true);
         setVisible(false);
+        
     }
 
     private void regresarMenuPrincipal() {
