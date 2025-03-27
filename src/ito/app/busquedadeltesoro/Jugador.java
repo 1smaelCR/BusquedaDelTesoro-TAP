@@ -18,7 +18,7 @@ public class Jugador {
 
     private void actualizarFicha() {
         ImageIcon iconoFicha = new ImageIcon(rutaFicha);
-        Image imagenFicha = iconoFicha.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        Image imagenFicha = iconoFicha.getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH);
         this.ficha = new JLabel(new ImageIcon(imagenFicha));
     }
 

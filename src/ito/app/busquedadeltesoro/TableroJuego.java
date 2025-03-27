@@ -11,6 +11,7 @@ import java.util.Collections;
 
 
 public class TableroJuego extends JFrame {
+    private Musica musicaFondo = new Musica();
     private Jugador[] jugadores;
     private int turnoActual = 0;
     private Casilla[] casillas;
@@ -88,6 +89,10 @@ public class TableroJuego extends JFrame {
         if (tiempoRestanteTurno <= 10) {
             etiquetaTiempoTurno.setForeground(Color.RED);
         }
+    }
+    
+    public void iniciarMusicaFondo() {
+        musicaFondo.reproducirMusica("sounds/tableroSong.wav"); // Iniciar música de fondo
     }
 
     private void iniciarNuevoTurno() {
@@ -227,13 +232,10 @@ public class TableroJuego extends JFrame {
         // Nuevos botones de Menú y Salir
         JPanel panelSalida = new JPanel(new GridLayout(1, 2, 10, 10));
         JButton botonMenu = crearBoton("Menú Principal", new Color(255, 165, 0), Color.WHITE); // Naranja
-        JButton botonSalir = crearBoton("Salir", Color.RED, Color.WHITE);
         
         botonMenu.addActionListener(e -> regresarAlMenu());
-        botonSalir.addActionListener(e -> salirDelJuego());
         
         panelSalida.add(botonMenu);
-        panelSalida.add(botonSalir);
 
         // Contenedor para ambos grupos de botones
         JPanel panelBotonesContainer = new JPanel(new GridLayout(2, 1, 10, 10));
@@ -490,6 +492,7 @@ public class TableroJuego extends JFrame {
     public void mostrarMensaje(String mensaje) {
         areaAcertijo.append("\n" + mensaje + "\n");
     }
+    
     private void regresarAlMenu() {
         int confirmacion = JOptionPane.showConfirmDialog(
             this,
@@ -499,21 +502,23 @@ public class TableroJuego extends JFrame {
         );
         
         if (confirmacion == JOptionPane.YES_OPTION) {
-            this.dispose();
-            new MenuTesoro().setVisible(true); // Asegúrate que MenuTesoro tenga un constructor público
+            MenuTesoro menu = new MenuTesoro();
+            if(modoFullScreen == true){
+                dispose();
+                menu.setVisible(true);
+            } else {
+                dispose();
+                menu.setUndecorated(false);
+                menu.setExtendedState(JFrame.NORMAL);
+                menu.setSize(1176, 664);
+                menu.setLocationRelativeTo(null);
+                modoFullScreen = false;
+                menu.actualizarFondo();
+                menu.setVisible(true);
+            }
+            musicaFondo.detenerMusica();
+            menu.iniciarMusicaFondo();
         }
     }
 
-    private void salirDelJuego() {
-        int confirmacion = JOptionPane.showConfirmDialog(
-            this,
-            "¿Estás seguro que quieres salir del juego?",
-            "Confirmar",
-            JOptionPane.YES_NO_OPTION
-        );
-        
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            System.exit(0);
-        }
-    }
 }
