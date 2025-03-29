@@ -4,9 +4,9 @@ public class GeneradorAcertijos {
     public static Acertijo[] generarAcertijos() {
         Acertijo[] acertijos = new Acertijo[50];
 
-        acertijos[0] = new Acertijo("Un ingrediente secreto tiene, en un lugar \noculto se mantiene, todos lo desean pero nadie lo obtiene. ¿Qué es?", "la formula secreta");
-        acertijos[1] = new Acertijo("Vive en un balde y planea robar, su color \nlo dice todo, pero siempre fallará. ¿Quién es?", "plankton");
-        acertijos[2] = new Acertijo("Tiene una casa pero no un hogar, a veces su \ncaracol le canta sin cesar. ¿Quién es?", "bob esponja");
+        acertijos[0] = new Acertijo("Un ingrediente secreto tiene, en un lugar \noculto se mantiene, todos lo desean pero \nnadie lo obtiene. ¿Qué es?", "la formula secreta");
+        acertijos[1] = new Acertijo("Vive en un balde y planea robar, su color \nlo dice todo, pero siempre fallará. \n¿Quién es?", "plankton");
+        acertijos[2] = new Acertijo("Tiene una casa pero no un hogar, a veces su \ncaracol le canta sin cesar. ¿Quién es?\n", "bob esponja");
         acertijos[3] = new Acertijo("Un millón de dólares escondió, pero en su \ncolchón lo olvidó. ¿Quién es?", "don cangrejo");
         acertijos[4] = new Acertijo("Un gran concurso de comida ganó, pero por \nvomitar lo perdió. ¿Quién es?", "patricio");
         acertijos[5] = new Acertijo("Una obra de teatro escribió, pero el público \nno la entendió. ¿Quién es?", "calamardo");
@@ -16,15 +16,15 @@ public class GeneradorAcertijos {
         acertijos[9] = new Acertijo("Quiero que Fondo de Bikini me respete como \nempresario. ¿Quién soy?", "plankton");
         acertijos[10] = new Acertijo("Se unió a un grupo de rebeldes, pero su \ntrabajo no pudo dejar. ¿Quién es?", "bob esponja");
         acertijos[11] = new Acertijo("Hizo una película en su imaginación, pero \nnadie entendió su actuación. ¿Qué es?", "la caja magica");
-        acertijos[12] = new Acertijo("Un cerebro falso, patricio puso en su \ncabeza, pero su inteligencia era solo una estrategia. ¿En que capitulo fue?", "patricio inteligente");
+        acertijos[12] = new Acertijo("Un cerebro falso, patricio puso en su \ncabeza, pero su inteligencia era solo una \nestrategia. ¿En que capitulo fue?", "patricio inteligente");
         acertijos[13] = new Acertijo("Lo mandaron a la escuela de nuevo, y la \nmaestra tuvo que tenerle paciencia de acero. \n¿Quién es?", "don cangrejo");
         acertijos[14] = new Acertijo("Bob y patricio cuidaron un huevo, pero la \npaternidad fue un juego. ¿Que capitulo fue?", "padres adoptivos");
         acertijos[15] = new Acertijo("Bob quiso escapar de un ladrón, pero todo \nfue parte de una confusión. ¿Que capitulo es?", "el cliente misterioso");
         acertijos[16] = new Acertijo("Vas a ser un dios y te gustará. ¿Quien dijo \nesta frase?","rey neptuno");
         acertijos[17] = new Acertijo("Soy una ardilla que vive en una cúpula y \nama el karate. ¿Quién soy?", "arenita");
-        acertijos[18] = new Acertijo("Soy una maestra estricta que enseña a conducir, \npero mi peor alumno nunca aprueba. ¿Quién soy?", "señorita puff");
-        acertijos[19] = new Acertijo("Soy el héroe de la infancia de muchos, aunque \nya estoy muy viejo y cansado. ¿Quién soy?", "sireno man");
-        acertijos[20] = new Acertijo("Soy un pez fortachón que aparece en la \nlaguna pegajosa y tengo unos shorts verdes. ¿Quién soy?", "pez musculoso");
+        acertijos[18] = new Acertijo("Soy una maestra estricta que enseña a \nconducir, pero mi peor alumno nunca aprueba. \n¿Quién soy?", "señorita puff");
+        acertijos[19] = new Acertijo("Soy el héroe de la infancia de muchos, aunque \nya estoy muy viejo y cansado. ¿Quién soy?", "sirenoman");
+        acertijos[20] = new Acertijo("Soy una langosta fortachón que aparece \nen la laguna pegajosa y tengo unos shorts \nverdes. ¿Quién soy?", "larry");
         acertijos[21] = new Acertijo("Soy un calamar guapo que aparece en un \nepisodio y todos me adoran. ¿Quién soy?", "calamardo guapo");
         acertijos[22] = new Acertijo("Un pastel cocinó, pero la mezcla con jabón \narruinó. ¿Quién es?", "bob esponja");
         acertijos[23] = new Acertijo("Cantó una canción en el crustáceo, pero su \npúblico no estaba impresionado. ¿Quién es?", "calamardo");

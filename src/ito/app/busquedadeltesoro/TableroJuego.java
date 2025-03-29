@@ -11,7 +11,7 @@ import java.util.Collections;
 
 
 public class TableroJuego extends JFrame {
-    private Musica musicaFondo = new Musica();
+    public Musica musicaFondo = new Musica();
     private EfectosSonido dadoSfx = new EfectosSonido();
     private Jugador[] jugadores;
     private int turnoActual = 0;
@@ -58,7 +58,7 @@ public class TableroJuego extends JFrame {
         });
         
         // Temporizador por turno (30 segundos)
-        temporizadorTurno = new Timer(1000, e -> {
+            temporizadorTurno = new Timer(1000, e -> {
             tiempoRestanteTurno--;
             actualizarTiempoTurno();
             
@@ -136,47 +136,47 @@ public class TableroJuego extends JFrame {
     }
 
     private JPanel crearPanelTablero() {
-    JPanel panel = new JPanel(new GridLayout(10, 10));
-    String rutaBase = "images/tapizCasillas.png";
-    String rutaInicio = "images/inicio_1.png";
-    String rutaTesoro = "images/tesoroFinal.png";
-    String rutaAvanza = "images/avanza.png";  // Nueva imagen
-    String rutaRetrocede = "images/retrocede.png";  // Nueva imagen
+        JPanel panel = new JPanel(new GridLayout(10, 10));
+        String rutaBase = "images/tapizCasillas.png";
+        String rutaInicio = "images/inicio_1.png";
+        String rutaTesoro = "images/tesoroFinal.png";
+        String rutaAvanza = "images/avanza.png";  // Nueva imagen
+        String rutaRetrocede = "images/retrocede.png";  // Nueva imagen
 
-    // Generar posiciones aleatorias para casillas especiales (2-99)
-    List<Integer> posiciones = new ArrayList<>();
-    for(int i = 2; i < 100; i++) posiciones.add(i);
-    Collections.shuffle(posiciones);
+        // Generar posiciones aleatorias para casillas especiales (2-99)
+        List<Integer> posiciones = new ArrayList<>();
+        for(int i = 2; i < 100; i++) posiciones.add(i);
+        Collections.shuffle(posiciones);
 
-    List<Integer> avanzaPosiciones = posiciones.subList(0, 10);
-    List<Integer> retrocedePosiciones = posiciones.subList(10, 20);
+        List<Integer> avanzaPosiciones = posiciones.subList(0, 10);
+        List<Integer> retrocedePosiciones = posiciones.subList(10, 20);
 
-    for (int fila = 0; fila < 10; fila++) {
-        for (int columna = 0; columna < 10; columna++) {
-            int posicion = fila * 10 + columna + 1;
-            Casilla casilla;
-            
-            if (posicion == 1) {
-                casilla = new CasillaInicioFinal(posicion, rutaInicio);
-            } else if (posicion == 100) {
-                casilla = new CasillaInicioFinal(posicion, rutaTesoro);
-            } else if (avanzaPosiciones.contains(posicion)) {
-                int valor = (int)(Math.random() * 10) + 1;
-                casilla = new CasillaEspecial(posicion, "avanza", valor, rutaAvanza);
-            } else if (retrocedePosiciones.contains(posicion)) {
-                int valor = (int)(Math.random() * 10) + 1;
-                casilla = new CasillaEspecial(posicion, "retrocede", valor, rutaRetrocede);
-            } else {
-                casilla = new Casilla(posicion, rutaBase);
+        for (int fila = 0; fila < 10; fila++) {
+            for (int columna = 0; columna < 10; columna++) {
+                int posicion = fila * 10 + columna + 1;
+                Casilla casilla;
+
+                if (posicion == 1) {
+                    casilla = new CasillaInicioFinal(posicion, rutaInicio);
+                } else if (posicion == 100) {
+                    casilla = new CasillaInicioFinal(posicion, rutaTesoro);
+                } else if (avanzaPosiciones.contains(posicion)) {
+                    int valor = (int)(Math.random() * 10) + 1;
+                    casilla = new CasillaEspecial(posicion, "avanza", valor, rutaAvanza);
+                } else if (retrocedePosiciones.contains(posicion)) {
+                    int valor = (int)(Math.random() * 10) + 1;
+                    casilla = new CasillaEspecial(posicion, "retrocede", valor, rutaRetrocede);
+                } else {
+                    casilla = new Casilla(posicion, rutaBase);
+                }
+
+                casillas[posicion - 1] = casilla;
+                //panel.setBackground(Color.cyan);
+                panel.add(casilla);
             }
-            
-            casillas[posicion - 1] = casilla;
-            //panel.setBackground(Color.cyan);
-            panel.add(casilla);
         }
+        return panel;
     }
-    return panel;
-}
 
 
     private JPanel crearPanelControl() {
@@ -271,73 +271,158 @@ public class TableroJuego extends JFrame {
 
     private void configurarEventos() {
         botonLanzarDado.addActionListener(e -> {
-        if (!ordenDeterminado && !juegoTerminado && !dado.estaAnimando()) {
-            // Mostrar panel de animación
-            JDialog dialogoDado = new JDialog(this, "Lanzando dado...", false);
-            dialogoDado.setLayout(new BorderLayout());
-            dialogoDado.setSize(300, 300);
-            dialogoDado.setLocationRelativeTo(this);
-            
-            Dado dadoAnimado = new Dado();
-            dialogoDado.add(dadoAnimado, BorderLayout.CENTER);
-            
-            JLabel instruccion = new JLabel("Lanzando dado...", SwingConstants.CENTER);
-            dialogoDado.add(instruccion, BorderLayout.SOUTH);
-            
-            dialogoDado.setVisible(true);
-            iniciarDadoSfx();
-            
-            // Lanzar el dado
-            int resultado = dadoAnimado.lanzar();
-            
-            // Timer para esperar animación
-            Timer timerAnimacion = new Timer(100, ev -> {
-                if (!dadoAnimado.estaAnimando()) {
-                    ((Timer)ev.getSource()).stop();
-                    
-                    // Cerrar diálogo y continuar
-                    dialogoDado.dispose();
-                    areaAcertijo.append("Resultado: " + resultado + "\n");
-                    determinarOrden(resultado);
-                    ordenDeterminado = true;
-                    botonLanzarDado.setEnabled(false);
-                    temporizadorGlobal.start(); // Iniciar temporizador global al primer lanzamiento
-                    iniciarNuevoTurno();
-                    
-                }
-            });
-            timerAnimacion.start();
-        }
-});
+            if (!ordenDeterminado && !juegoTerminado && !dado.estaAnimando()) {
+                // Mostrar panel de animación
+                JDialog dialogoDado = new JDialog(this, "Lanzando dado...", false);
+                dialogoDado.setLayout(new BorderLayout());
+                dialogoDado.setSize(300, 300);
+                dialogoDado.setLocationRelativeTo(this);
+
+                Dado dadoAnimado = new Dado();
+                dialogoDado.add(dadoAnimado, BorderLayout.CENTER);
+
+                JLabel instruccion = new JLabel("Lanzando dado...", SwingConstants.CENTER);
+                dialogoDado.add(instruccion, BorderLayout.SOUTH);
+
+                dialogoDado.setVisible(true);
+                iniciarDadoSfx();
+
+                // Lanzar el dado
+                int resultado = dadoAnimado.lanzar();
+
+                // Timer para esperar animación
+                Timer timerAnimacion = new Timer(100, ev -> {
+                    if (!dadoAnimado.estaAnimando()) {
+                        ((Timer)ev.getSource()).stop();
+
+                        
+                        dialogoDado.dispose();
+                        areaAcertijo.append("Resultado:\n");
+                        determinarOrden(resultado);
+                        ordenDeterminado = true;
+                        temporizadorGlobal.start(); // Iniciar temporizador global al primer lanzamiento
+                        iniciarNuevoTurno();
+
+                    }
+                });
+                timerAnimacion.start();
+            }
+        });
         
-    botonResolverAcertijo.addActionListener(e -> {
-        if (ordenDeterminado && !juegoTerminado) {
-            temporizadorTurno.stop(); // Pausar temporizador de turno
-            manejadorFichas.resolverAcertijo(jugadores[turnoActual]);
-            actualizarFichas();
-        }
-    });
-}
+        botonResolverAcertijo.addActionListener(e -> {
+            if (ordenDeterminado && !juegoTerminado) {
+                temporizadorTurno.stop(); // Pausar temporizador de turno
+                manejadorFichas.resolverAcertijo(jugadores[turnoActual]);
+                actualizarFichas();
+            }
+        });
+    }
 
     private void determinarOrden(int resultadoDado) {
     // Mostrar resultado del primer jugador
     areaAcertijo.append(jugadores[0].getNombre() + " sacó: " + resultadoDado + "\n");
-    
-    // Lanzar dado para el segundo jugador
-    int resultadoDadoJugador2 = dado.lanzar();
-    areaAcertijo.append(jugadores[1].getNombre() + " sacó: " + resultadoDadoJugador2 + "\n");
-    
-    // Determinar quién comienza primero
-    if (resultadoDado == resultadoDadoJugador2) {
-        // Empate - lanzar nuevamente
-        areaAcertijo.append("¡Empate! Lanzando nuevamente...\n");
-        determinarOrden(dado.lanzar());
+
+    // Array para almacenar los resultados de todos los jugadores
+    int[] resultados = new int[jugadores.length];
+    resultados[0] = resultadoDado;
+
+    // Lanzar dado para los demás jugadores
+    for (int i = 1; i < jugadores.length; i++) {
+        resultados[i] = dado.lanzar();
+        areaAcertijo.append(jugadores[i].getNombre() + " sacó: " + resultados[i] + "\n");
+    }
+
+    // Determinar si hay empate y quiénes están empatados
+    List<Integer> empatados = encontrarEmpatados(resultados);
+
+    if (empatados.size() > 1) {
+        areaAcertijo.append("\n!Hay empate! Vuelve a lanzar el dado para \ndesempatar.\n");
+
+        // Prepara para el desempate
+        botonLanzarDado.setEnabled(true);
+        botonLanzarDado.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                botonLanzarDado.removeActionListener(this); // Eliminar este listener para evitar acumulación
+                desempatar(empatados);
+            }
+        });
         return;
     }
-    
-    turnoActual = (resultadoDado > resultadoDadoJugador2) ? 0 : 1;
+
+    // Si no hay empate, determinar el ganador
+    int indiceGanador = 0;
+    for (int i = 1; i < resultados.length; i++) {
+        if (resultados[i] > resultados[indiceGanador]) {
+            indiceGanador = i;
+        }
+    }
+
+    turnoActual = indiceGanador;
     actualizarTurno();
-    areaAcertijo.append("¡" + jugadores[turnoActual].getNombre() + " comienza primero!\n");
+    areaAcertijo.append("\n¡" + jugadores[turnoActual].getNombre() + " comienza primero!\n");
+    ordenDeterminado = true;
+    botonLanzarDado.setEnabled(false);
+    temporizadorGlobal.start();
+    iniciarNuevoTurno();
+}
+
+    private void desempatar(List<Integer> empatados) {
+    for (int i = 0; i < empatados.size(); i++) {
+        if (i < empatados.size() - 1) {
+            areaAcertijo.append(", ");
+        }
+    }
+    areaAcertijo.append("\n");
+
+    // Mostrar panel de animación del dado
+    JDialog dialogoDado = new JDialog(this, "Lanzando dado para desempate...", false);
+    dialogoDado.setLayout(new BorderLayout());
+    dialogoDado.setSize(300, 300);
+    dialogoDado.setLocationRelativeTo(this);
+
+    Dado dadoAnimado = new Dado();
+    dialogoDado.add(dadoAnimado, BorderLayout.CENTER);
+
+    dialogoDado.setVisible(true);
+    iniciarDadoSfx();
+
+    // Lanzar el dado
+    int resultado = dadoAnimado.lanzar();
+
+    // Timer para esperar animación
+    Timer timerAnimacion = new Timer(100, ev -> {
+        if (!dadoAnimado.estaAnimando()) {
+            ((Timer)ev.getSource()).stop();
+            dialogoDado.dispose();
+
+            areaAcertijo.append("Resultado del desempate:\n");
+            determinarOrden(resultado); // Llamada recursiva con el nuevo resultado
+        }
+    });
+    timerAnimacion.start();
+}
+
+// Método auxiliar para encontrar los índices de los jugadores empatados (igual que antes)
+private List<Integer> encontrarEmpatados(int[] resultados) {
+    int max = -1;
+    List<Integer> empatados = new ArrayList<>();
+
+    // Encontrar el valor máximo
+    for (int resultado : resultados) {
+        if (resultado > max) {
+            max = resultado;
+        }
+    }
+
+    // Encontrar todos los jugadores con ese valor máximo
+    for (int i = 0; i < resultados.length; i++) {
+        if (resultados[i] == max) {
+            empatados.add(i);
+        }
+    }
+
+    return empatados;
 }
 
     public void moverFicha(Jugador jugador, int pasos) {
@@ -366,112 +451,142 @@ public class TableroJuego extends JFrame {
         }
     }
 
-   public void animarMovimiento(Jugador jugador, int desde, int hasta) {
-    if (desde == hasta) return;
-    
-    JLabel ficha = jugador.getFicha();
-    Casilla casillaOrigen = casillas[desde - 1];
-    Casilla casillaDestino = casillas[hasta - 1];
-    
-    Point puntoOrigen = casillaOrigen.getLocation();
-    Point puntoDestino = casillaDestino.getLocation();
-    
-    Timer timer = new Timer(30, new ActionListener() {
-        private int paso = 0;
-        private final int totalPasos = 10;
-        
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (paso >= totalPasos) {
-                ((Timer)e.getSource()).stop();
-                jugador.setPosicion(hasta);
-                actualizarFichas();
-                
-                if (hasta == 100) {
-                    // Lógica del acertijo final
-                    resolverAcertijoFinal(jugador);
-                }
-                return;
-            }
-            
-            double progreso = (double)paso / totalPasos;
-            int x = (int)(puntoOrigen.x + (puntoDestino.x - puntoOrigen.x) * progreso);
-            int y = (int)(puntoOrigen.y + (puntoDestino.y - puntoOrigen.y) * progreso);
-            
-            ficha.setLocation(x, y);
-            
-            if (paso < totalPasos / 2) {
-                ficha.setLocation(x, y - (int)(10 * Math.sin(Math.PI * progreso)));
-            }
-            
-            paso++;
+    ImageIcon casillaPotIcon;
+    ImageIcon casillaTraIcon;
+    public void animarMovimiento(Jugador jugador, int desde, int hasta) {
+        casillaPotIcon = new ImageIcon("images/avanzaicon.png");
+        casillaTraIcon = new ImageIcon("images/retrocedeicon.png");
+        if (desde < 1 || hasta < 1 || desde > 100 || hasta > 100) {
+            System.err.println("Posición inválida: desde=" + desde + ", hasta=" + hasta);
+            return;
         }
-    });
-    
-    casillaOrigen.eliminarFicha(ficha);
-    getContentPane().add(ficha);
-    ficha.setLocation(puntoOrigen);
-    timer.start();
-}
 
-private void resolverAcertijoFinal(Jugador jugador) {
-    // Deshabilitar botones durante el acertijo final
-    botonLanzarDado.setEnabled(false);
-    botonResolverAcertijo.setEnabled(false);
-    
-    // Mostrar mensaje especial
-    areaAcertijo.setText("¡ACERTIJO FINAL!\n" +
-                        jugador.getNombre() + " ha llegado al tesoro.\n" +
-                        "Resuelve este acertijo para ganar:");
-    
-    // Obtener y mostrar acertijo
-    Acertijo acertijoFinal = manejadorFichas.obtenerAcertijoAleatorio();
-    areaAcertijo.append("\n\n" + acertijoFinal.getPregunta());
-    
-    // Pedir respuesta
-    String respuesta = JOptionPane.showInputDialog(this, 
-        "Acertijo final para ganar:\n" + acertijoFinal.getPregunta(), 
-        "¡Tesoro encontrado!", 
-        JOptionPane.QUESTION_MESSAGE);
-    
-    if (acertijoFinal.verificarRespuesta(respuesta)) {
-        // Respuesta correcta
-        juegoTerminado = true;
-        mostrarMensaje("¡CORRECTO! " + jugador.getNombre() + " ha ganado el juego!");
-        mostrarPantallaFinal();
-    } else {
-        // Respuesta incorrecta
-        mostrarMensaje("¡Incorrecto! " + jugador.getNombre() + " pierde el turno.");
-        jugador.setPosicion(95); // Retroceder 5 casillas
-        actualizarFichas();
-        siguienteTurno();
-        
-        // Rehabilitar botones para siguiente jugador
-        botonResolverAcertijo.setEnabled(true);
+        JLabel ficha = jugador.getFicha();
+        Casilla casillaOrigen = casillas[desde - 1];
+        Casilla casillaDestino = casillas[hasta - 1];
+
+        // 1. Eliminar ficha de la casilla origen (como en tu original)
+        casillaOrigen.eliminarFicha(ficha);
+        getContentPane().add(ficha);
+
+        Timer timer = new Timer(30, new ActionListener() {
+            private int paso = 0;
+            private final int totalPasos = 10;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (paso >= totalPasos) {
+                    ((Timer)e.getSource()).stop();
+
+                    // 2. Actualizar posición (como en tu original)
+                    jugador.setPosicion(hasta);
+                    actualizarFichas();
+
+                    // 3. Nuevo: Verificar casillas especiales
+                    if (casillaDestino instanceof CasillaEspecial) {
+                        CasillaEspecial especial = (CasillaEspecial) casillaDestino;
+                        int movimiento = especial.getValor();
+                        int nuevaPos;
+
+                        if (especial.getTipo().equals("avanza")) {
+                            JOptionPane.showMessageDialog(null, "¡Haz caido en la casilla potenciadora!\nAvanzas " + movimiento + " casillas", "¡Casilla Especial!", HEIGHT, casillaPotIcon);
+                            nuevaPos = Math.min(hasta + movimiento, 100);
+                            areaAcertijo.append("\n¡Casilla especial! Avanzas " + movimiento + " casillas!\n");
+                        } else {
+                            JOptionPane.showMessageDialog(null, "¡Haz caido en la casilla trampa!\nRetrocedes " + movimiento + " casillas", "¡Casilla Especial!", HEIGHT, casillaTraIcon);
+                            nuevaPos = Math.max(hasta - movimiento, 1);
+                            areaAcertijo.append("\n¡Casilla especial! Retrocedes " + movimiento + " casillas!\n");
+                        }
+
+                        // Llamada recursiva para el movimiento adicional
+                        if (nuevaPos != hasta) {
+                            animarMovimiento(jugador, hasta, nuevaPos);
+                        }
+                    }
+
+                    // 4. Verificar victoria (como en tu original)
+                    if (hasta == 100) {
+                        resolverAcertijoFinal(jugador);
+                    }
+                    return;
+                }
+
+                // Animación original (con tu efecto de salto)
+                Point puntoOrigen = casillaOrigen.getLocation();
+                Point puntoDestino = casillaDestino.getLocation();
+                double progreso = (double)paso / totalPasos;
+                int x = (int)(puntoOrigen.x + (puntoDestino.x - puntoOrigen.x) * progreso);
+                int y = (int)(puntoOrigen.y + (puntoDestino.y - puntoOrigen.y) * progreso);
+
+                if (paso < totalPasos / 2) {
+                    y -= (int)(10 * Math.sin(Math.PI * progreso));
+                }
+
+                ficha.setLocation(x, y);
+                paso++;
+            }
+        });
+        timer.start();
     }
-}
+
+    private void resolverAcertijoFinal(Jugador jugador) {
+        // Deshabilitar botones durante el acertijo final
+        botonLanzarDado.setEnabled(false);
+        botonResolverAcertijo.setEnabled(false);
+
+        // Mostrar mensaje especial
+        areaAcertijo.setText("¡ACERTIJO FINAL!\n" +
+                            jugador.getNombre() + " ha llegado al tesoro.\n" +
+                            "Resuelve este acertijo para ganar:");
+
+        // Obtener y mostrar acertijo
+        Acertijo acertijoFinal = manejadorFichas.obtenerAcertijoAleatorio();
+        areaAcertijo.append("\n\n" + acertijoFinal.getPregunta());
+
+        // Pedir respuesta
+        String respuesta = JOptionPane.showInputDialog(this, 
+            "Acertijo final para ganar:\n" + acertijoFinal.getPregunta(), 
+            "¡Tesoro encontrado!", 
+            JOptionPane.QUESTION_MESSAGE);
+
+        if (acertijoFinal.verificarRespuesta(respuesta)) {
+            // Respuesta correcta
+            juegoTerminado = true;
+            mostrarMensaje("¡CORRECTO! " + jugador.getNombre() + " ha ganado el juego!");
+            mostrarPantallaFinal();
+        } else {
+            // Respuesta incorrecta
+            mostrarMensaje("¡Incorrecto! " + jugador.getNombre() + " pierde el turno.");
+            jugador.setPosicion(95); // Retroceder 5 casillas
+            actualizarFichas();
+            siguienteTurno();
+
+            // Rehabilitar botones para siguiente jugador
+            botonResolverAcertijo.setEnabled(true);
+        }
+    }
 
     private void mostrarPantallaFinal() {
         Arrays.sort(jugadores, (j1, j2) -> Integer.compare(j2.getPosicion(), j1.getPosicion()));
-        
-        SwingUtilities.invokeLater(() -> {
-            new PantallaFinal(jugadores);
-            this.dispose();
-        });
+        PantallaFinal win = new PantallaFinal(jugadores);
+        win.setVisible(true);
+        dispose();
+        musicaFondo.detenerMusica();
+        win.iniciarWinSfx();
     }
 
    public void siguienteTurno() {
-    if (juegoTerminado) return;
-    
-    temporizadorTurno.stop();
-    turnoActual = (turnoActual + 1) % jugadores.length;
-    actualizarTurno();
-    
-    // Mostrar mensaje del cambio de turno
-    areaAcertijo.append("\nTurno de " + jugadores[turnoActual].getNombre() + "\n");
-    
-    iniciarNuevoTurno();
-}
+        if (juegoTerminado) return;
+
+        temporizadorTurno.stop();
+        turnoActual = (turnoActual + 1) % jugadores.length;
+        actualizarTurno();
+
+        // Mostrar mensaje del cambio de turno
+        areaAcertijo.append("\nTurno de " + jugadores[turnoActual].getNombre() + "\n");
+
+        iniciarNuevoTurno();
+    }
 
     private void actualizarTurno() {
         etiquetaTurno.setText("Turno: " + jugadores[turnoActual].getNombre());
@@ -523,5 +638,4 @@ private void resolverAcertijoFinal(Jugador jugador) {
             menu.iniciarMusicaFondo();
         }
     }
-
 }

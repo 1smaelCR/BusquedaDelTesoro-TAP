@@ -142,7 +142,7 @@ public class MenuTesoro extends JFrame {
 
         TableroJuego pantalla = new TableroJuego(jugadores);
         pantalla.setVisible(true);
-        setVisible(false);
+        dispose();
         musicaFondo.detenerMusica();
         pantalla.iniciarMusicaFondo();
         
